@@ -65,7 +65,8 @@ Let's pick our official [NGINX Docker image](https://hub.docker.com/_/nginx/) as
 Here's how you can build the Docker image with the Amplify Agent inside, based on the official NGINX image:
 
 ```
-    $ docker build -t nginx-amplify .
+    $ git clone https://github.com/nginxinc/docker-nginx-amplify.git
+    $ docker build --build-arg API_KEY=YOUR_AMPLIFY_API_KEY -t nginx-amplify docker-nginx-amplify/
 ```
 
 After the image is built, check the list of Docker images:
