@@ -32,16 +32,16 @@ You can learn more about the agent's configuration options [here](https://github
 
 ### 1.3. Aggregate Mode
 
-When reporting a new object for monitoring, the agent honors the `hostname` configuration option in **/etc/amplify-agent/agent.conf** (see the Amplify [docs](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#changing-the-hostname-and-uuid) for additional information).
+When reporting a new object for monitoring, the agent honors the `imagename` configuration option in **/etc/amplify-agent/agent.conf** (see the Amplify [docs](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#changing-the-hostname-and-uuid) for additional information).
 
-Normally, the `hostname` is derived automatically through the standard means of obtaining the name of the OS object being monitored. It is possible to explicitly specify the same `hostname` for multiple instances. In this scenario, the metrics received from several agents will be aggregated internally on the backend side—with a single OS object created for monitoring. This way a combined view of various statistics can be obtained (e.g. for a "microservice"). For example, this combined view can display the total number of requests per second through all backend instances of a microservice.
+Normally, the `imagename` is derived automatically through the standard means of obtaining the name of the OS object being monitored. It is possible to explicitly specify the same `imagename` for multiple instances. In this scenario, the metrics received from several agents will be aggregated internally on the backend side—with a single OS object created for monitoring. This way a combined view of various statistics can be obtained (e.g. for a "microservice"). For example, this combined view can display the total number of requests per second through all backend instances of a microservice.
 
-Containers with a common `hostname` do not have to share the same local Docker image or NGINX configuration. Containers can be located on different physical hosts too.
+Containers with a common `imagename` do not have to share the same local Docker image or NGINX configuration. Containers can be located on different physical hosts too.
 
-To set a common `hostname` for several containers started from the Amplify-enabled image, you may either configure it explicitly in the Dockerfile—or use the `-e` option with `docker run`:
+To set a common `imagename` for several containers started from the Amplify-enabled image, you may either configure it explicitly in the Dockerfile—or use the `-e` option with `docker run`:
 
 ```
-      $ docker run --name mynginx1 -e API_KEY=ecfdee2e010899135c258d741a6effc7 AMPLIFY_HOSTNAME=my-service-A -d nginx-amplify
+      $ docker run --name mynginx1 -e API_KEY=ecfdee2e010899135c258d741a6effc7 AMPLIFY_IMAGENAME=my-service-A -d nginx-amplify
 ```
 
 ### 1.4. Current Limitations 
@@ -85,7 +85,7 @@ To start a container from the new image, use the command below:
     $ docker run --name mynginx1 -e API_KEY=ecfdee2e010899135c258d741a6effc7 -d nginx-amplify
 ```
 
-(again, if you'd like to aggregate metrics from several containers running identical image, add `-e AMPLIFY_HOSTNAME=<my-service-name>` as well)
+(again, if you'd like to aggregate metrics from several containers running identical image, add `-e AMPLIFY_IMAGENAME=<my-service-name>` as well)
 
 After the container has started, you may check it's status with `docker ps`:
 
@@ -102,7 +102,7 @@ and you can also check `docker logs`:
     starting nginx..
     updating /etc/amplify-agent/agent.conf ..
      ---> using api_key = ecfdee2e010899135c258d741a6effc7
-     ---> using hostname = 
+     ---> using imagename = <my-service-name>
     starting amplify-agent..
     watching nginx master process..
 ```
