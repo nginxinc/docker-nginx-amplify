@@ -60,7 +60,7 @@ We'll be working on improving the support for Docker in the nearest future. Stay
 
 (**Note**: If you are really new to Docker, [here's](https://docs.docker.com/engine/installation/) how to install Docker Engine on various OS.)
 
-Let's pick our official [NGINX Docker image](https://hub.docker.com/_/nginx/) as a good example. The Dockerfile that we're going to use for an Amplify-enabled image is [here](https://github.com/nginxinc/nginx-amplify-agent/blob/master/packages/docker/Dockerfile).
+Let's pick our official [NGINX Docker image](https://hub.docker.com/_/nginx/) as a good example. The Dockerfile that we're going to use for an Amplify-enabled image is [here](https://github.com/nginxinc/docker-nginx-amplify/blob/master/Dockerfile).
 
 Here's how you can build the Docker image with the Amplify Agent inside, based on the official NGINX image:
 
