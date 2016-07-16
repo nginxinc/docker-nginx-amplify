@@ -39,7 +39,10 @@ test -n "${API_KEY}" && \
 test -n "${AMPLIFY_HOSTNAME}" && \
     amplify_hostname=${AMPLIFY_HOSTNAME}
 
-if [ -n "${api_key}" -o -n "${amplify_hostname}" ]; then
+test -n "${AMPLIFY_IMAGENAME}" && \
+    amplify_imagename=${AMPLIFY_IMAGENAME}
+
+if [ -n "${api_key}" -o -n "${amplify_hostname}" -o -n "${amplify_imagename}" ]; then
     echo "updating ${agent_conf_file} .."
 
     if [ ! -f "${agent_conf_file}" ]; then
@@ -57,6 +60,11 @@ if [ -n "${api_key}" -o -n "${amplify_hostname}" ]; then
     echo " ---> using hostname = ${amplify_hostname}" && \
     sh -c "sed -i.old -e 's/hostname.*$/hostname = $amplify_hostname/' \
 	${agent_conf_file}"
+
+    test -n "${amplify_imagename}" && \
+    echo " ---> using imagename = ${amplify_imagename}" && \
+    sh -c "sed -i.old -e 's/imagename.*$/imagename = $amplify_imagename/' \
+    ${agent_conf_file}"
 
     test -f "${agent_conf_file}" && \
     chmod 644 ${agent_conf_file} && \

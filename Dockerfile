@@ -10,11 +10,10 @@ RUN apt-get update && apt-get install -y \
 
 # API_KEY is required for amplify-install.sh to generate the initial
 # configuration file for the Amplify Agent.
-# It could be your real API key for Amplify here, or a dummy one.
-# If left as 1234567890 in the image build, the real API_KEY should
-# be passed to the container via "docker run -e 'API_KEY=..'"
+# It have to be your real API key for Amplify here.
+# Also the real API_KEY could be passed to the container via "docker run -e 'API_KEY=..'"
 
-ENV API_KEY 1234567890
+ARG API_KEY
 
 # If AMPLIFY_HOSTNAME is set, the launch.sh script will use it to generate
 # the 'hostname' to put in the /etc/amplify-agent/agent.conf
