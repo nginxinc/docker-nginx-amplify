@@ -14,6 +14,7 @@
 
 # Variables
 agent_conf_file="/etc/amplify-agent/agent.conf"
+nginx_status_conf="/etc/nginx/conf.d/stub_status.conf"
 api_key=""
 amplify_hostname=""
 
@@ -61,6 +62,10 @@ if [ -n "${api_key}" -o -n "${amplify_hostname}" ]; then
     test -f "${agent_conf_file}" && \
     chmod 644 ${agent_conf_file} && \
     chown nginx ${agent_conf_file} > /dev/null 2>&1
+
+    test -f "${nginx_status_conf}" && \
+    chmod 644 ${nginx_status_conf} && \
+    chown nginx ${nginx_status_conf} > /dev/null 2>&1
 fi
 
 echo "starting amplify-agent.."
