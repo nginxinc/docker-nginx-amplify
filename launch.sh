@@ -1,14 +1,14 @@
 #!/bin/sh
 #
-# This script launches nginx and the Amplify Agent.
+# This script launches nginx and the NGINX Amplify Agent.
 #
 # Unless already baked in the image, a real API_KEY is required for the
-# Amplify Agent to be able to connect to the backend.
+# NGINX Amplify Agent to be able to connect to the backend.
 #
-# If AMPLIFY_HOSTNAME is set, the script will use it to generate
-# the 'hostname' to put in the /etc/amplify-agent/agent.conf
-# If several instances use the same hostname, the metrics will
-# be aggregated into a single object in Amplify. Otherwise Amplify
+# If AMPLIFY_IMAGENAME is set, the script will use it to generate
+# the 'imagename' to put in the /etc/amplify-agent/agent.conf
+# If several instances use the same imagename, the metrics will
+# be aggregated into a single object in Amplify. Otherwise NGINX Amplify
 # will create separate objects for monitoring (an object per instance).
 #
 
@@ -16,7 +16,7 @@
 agent_conf_file="/etc/amplify-agent/agent.conf"
 nginx_status_conf="/etc/nginx/conf.d/stub_status.conf"
 api_key=""
-amplify_hostname=""
+amplify_imagename=""
 
 # Launch nginx
 echo "starting nginx.."
@@ -37,10 +37,10 @@ fi
 test -n "${API_KEY}" && \
     api_key=${API_KEY}
 
-test -n "${AMPLIFY_HOSTNAME}" && \
-    amplify_hostname=${AMPLIFY_HOSTNAME}
+test -n "${AMPLIFY_IMAGENAME}" && \
+    amplify_imagename=${AMPLIFY_IMAGENAME}
 
-if [ -n "${api_key}" -o -n "${amplify_hostname}" ]; then
+if [ -n "${api_key}" -o -n "${amplify_imagename}" ]; then
     echo "updating ${agent_conf_file} .."
 
     if [ ! -f "${agent_conf_file}" ]; then
@@ -54,9 +54,9 @@ if [ -n "${api_key}" -o -n "${amplify_hostname}" ]; then
     sh -c "sed -i.old -e 's/api_key.*$/api_key = $api_key/' \
 	${agent_conf_file}"
 
-    test -n "${amplify_hostname}" && \
-    echo " ---> using hostname = ${amplify_hostname}" && \
-    sh -c "sed -i.old -e 's/hostname.*$/hostname = $amplify_hostname/' \
+    test -n "${amplify_imagename}" && \
+    echo " ---> using imagename = ${amplify_imagename}" && \
+    sh -c "sed -i.old -e 's/imagename.*$/imagename = $amplify_imagename/' \
 	${agent_conf_file}"
 
     test -f "${agent_conf_file}" && \
