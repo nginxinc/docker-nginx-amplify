@@ -11,6 +11,14 @@ RUN apt-get update \
     && apt-get purge -qqy curl apt-transport-https apt-utils \
     && rm -rf /var/lib/apt/lists/*
 
+# Keep the nginx logs inside the container
+RUN unlink /var/log/nginx/access.log \
+    && unlink /var/log/nginx/error.log \
+    && touch /var/log/nginx/access.log \
+    && touch /var/log/nginx/error.log \
+    && chown nginx /var/log/nginx/*log \
+    && chmod 644 /var/log/nginx/*log
+
 # Copy nginx stub_status config
 COPY ./conf.d/stub_status.conf /etc/nginx/conf.d
 
