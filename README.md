@@ -92,7 +92,13 @@ Here's how you can build the Docker image with the Amplify Agent inside, based o
 
 ```
     git clone https://github.com/nginxinc/docker-nginx-amplify.git
+```
+
+```
     cd docker-nginx-amplify
+```
+
+```
     docker build -t nginx-amplify .
 ```
 
@@ -104,7 +110,7 @@ After the image is built, check the list of Docker images:
 
 ```
     REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-    nginx-amplify       latest              d039b39d2987        3 minutes ago       252.1 MB
+    nginx-amplify       latest              d039b39d2987        3 minutes ago       241.6 MB
 ```
 
 ### 2.2. Running an Amplify-enabled NGINX Docker Container
