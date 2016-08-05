@@ -116,7 +116,7 @@ To start a container from the new image, use the command below:
 
 where the API_KEY is that assigned to your NGINX Amplify account, and the AMPLIFY_IMAGENAME is set to identify the running service as described in sections 1.2 and 1.3 above.
 
-After the container has started, you may check it's status with `docker ps`:
+After the container has started, you may check its status with `docker ps`:
 
 ```
     $ docker ps
@@ -131,7 +131,7 @@ and you can also check `docker logs`:
     starting nginx ...
     updating /etc/amplify-agent/agent.conf ...
      ---> using api_key = ffeedd0102030405060708090a0b0c
-     ---> using imagename = my-service-123
+     ---> using imagename = <my-service-name>
     starting amplify-agent ...
 ```
 
@@ -158,7 +158,7 @@ Check the Amplify Agent log:
     2016-08-05 19:50:24,674 [65] bridge_manager post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/update/ 202 2370 0 0.084
 ```
 
-When you're done with the container, you can stop it with:
+When you're done with the container, you can stop it like the following:
 
 ```
     $ docker stop 7d7b47ba4c72
