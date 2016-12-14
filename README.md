@@ -67,7 +67,7 @@ ENV AMPLIFY_IMAGENAME my-docker-instance-123
   * Use the `-e` option with `docker run` as in
 
 ```
-docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
+docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708 -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
 ```
 
 ### 1.4. Current Limitations 
@@ -120,7 +120,7 @@ Unless already done, you have to [sign up](https://amplify.nginx.com/signup/), c
 To start a container from the new image, use the command below:
 
 ```
-docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
+docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708 -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
 ```
 
 where the API_KEY is that assigned to your NGINX Amplify account, and the AMPLIFY_IMAGENAME is set to identify the running service as described in sections 1.2 and 1.3 above.
@@ -145,7 +145,7 @@ docker logs 7d7b47ba4c72
 ```
 starting nginx ...
 updating /etc/amplify-agent/agent.conf ...
----> using api_key = ffeedd0102030405060708090a0b0c
+---> using api_key = ffeedd0102030405060708
 ---> using imagename = my-service-123
 starting amplify-agent ...
 ```
@@ -175,8 +175,8 @@ docker exec 7d7b47ba4c72 tail /var/log/amplify-agent/agent.log
 ```
 2016-08-05 19:49:39,001 [65] supervisor agent started, version=0.37-1 pid=65 uuid=<..> imagename=my-service-123
 2016-08-05 19:49:39,047 [65] nginx_config running nginx -t -c /etc/nginx/nginx.conf
-2016-08-05 19:49:40,047 [65] supervisor post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/agent/ 200 85 4 0.096
-2016-08-05 19:50:24,674 [65] bridge_manager post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/update/ 202 2370 0 0.084
+2016-08-05 19:49:40,047 [65] supervisor post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708/agent/ 200 85 4 0.096
+2016-08-05 19:50:24,674 [65] bridge_manager post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708/update/ 202 2370 0 0.084
 ```
 
 When you're done with the container, you can stop it like the following:
