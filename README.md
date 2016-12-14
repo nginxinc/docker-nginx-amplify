@@ -50,25 +50,25 @@ To set a common `imagename` for several containers started from the Amplify-enab
 
   * Configure it explicitly in the Dockerfile
   
-```
-# If AMPLIFY_IMAGENAME is set, the startup wrapper script will use it to
-# generate the 'imagename' to put in the /etc/amplify-agent/agent.conf
-# If several instances use the same 'imagename', the metrics will
-# be aggregated into a single object in NGINX Amplify. Otherwise Amplify
-# will create separate objects for monitoring (an object per instance).
-# AMPLIFY_IMAGENAME can also be passed to the instance at runtime as
-# described below.
-
-ENV AMPLIFY_IMAGENAME my-docker-instance-123
-```
+  ```
+  # If AMPLIFY_IMAGENAME is set, the startup wrapper script will use it to
+  # generate the 'imagename' to put in the /etc/amplify-agent/agent.conf
+  # If several instances use the same 'imagename', the metrics will
+  # be aggregated into a single object in NGINX Amplify. Otherwise Amplify
+  # will create separate objects for monitoring (an object per instance).
+  # AMPLIFY_IMAGENAME can also be passed to the instance at runtime as
+  # described below.
+  
+  ENV AMPLIFY_IMAGENAME my-docker-instance-123
+  ```
 
   or
 
   * Use the `-e` option with `docker run` as in
 
-```
-docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708 -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
-```
+  ```
+  docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708 -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
+  ```
 
 ### 1.4. Current Limitations 
 
