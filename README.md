@@ -32,7 +32,7 @@ When using Amplify with Docker, another option is available and recommended — 
 
 If you prefer to see the individual instances started from the same image as separate objects, assign different `imagename`'s to each of the running instances.
 
-You can learn more about the agent configuration options [here](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#configuring-amplify-agent).
+You can learn more about the agent configuration options [here](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#configuring-the-agent).
 
 ### 1.3. Aggregate Mode
 
@@ -51,15 +51,15 @@ To set a common `imagename` for several containers started from the Amplify-enab
   * Configure it explicitly in the Dockerfile
   
 ```
-    # If AMPLIFY_IMAGENAME is set, the startup wrapper script will use it to
-    # generate the 'imagename' to put in the /etc/amplify-agent/agent.conf
-    # If several instances use the same 'imagename', the metrics will
-    # be aggregated into a single object in NGINX Amplify. Otherwise Amplify
-    # will create separate objects for monitoring (an object per instance).
-    # AMPLIFY_IMAGENAME can also be passed to the instance at runtime as
-    # described below.
+# If AMPLIFY_IMAGENAME is set, the startup wrapper script will use it to
+# generate the 'imagename' to put in the /etc/amplify-agent/agent.conf
+# If several instances use the same 'imagename', the metrics will
+# be aggregated into a single object in NGINX Amplify. Otherwise Amplify
+# will create separate objects for monitoring (an object per instance).
+# AMPLIFY_IMAGENAME can also be passed to the instance at runtime as
+# described below.
 
-    ENV AMPLIFY_IMAGENAME my-docker-instance-123
+ENV AMPLIFY_IMAGENAME my-docker-instance-123
 ```
 
   or
@@ -67,16 +67,16 @@ To set a common `imagename` for several containers started from the Amplify-enab
   * Use the `-e` option with `docker run` as in
 
 ```
-      docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
+docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
 ```
 
 ### 1.4. Current Limitations 
 
-The following list summarizes the limitations of Docker containers monitoring:
+The following list summarizes existing limitations of monitoring Docker containers with Amplify:
 
- * In order for the agent to collect [additional NGINX metrics](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#additional-nginx-metrics) the NGINX logs should be kept inside the container (by default the NGINX logs are redirected to the Docker log collector). At this time the agent can obtain NGINX log files only directly from storage.
+ * In order for the agent to collect [additional NGINX metrics](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#additional-nginx-metrics) the NGINX logs should be kept inside the container (by default the NGINX logs are redirected to the Docker log collector). At this time the agent can obtain NGINX log files directly from storage or via syslog.
  * In "aggregate" mode, some of the OS metrics and metadata are not collected.
- * The agent can only monitor NGINX from inside the container. It is not currently possible to run the Amplify Agent in a separate container and monitor the neighboring containers running NGINX.
+ * The agent can only monitor NGINX from inside the container. It is not currently possible to run the agent in a separate container and monitor the neighboring containers running NGINX.
  
 We've been working on improving the support for Docker even more. Stay tuned!
 
@@ -91,26 +91,26 @@ Let's pick our official [NGINX Docker image](https://hub.docker.com/_/nginx/) as
 Here's how you can build the Docker image with the Amplify Agent inside, based on the official NGINX image:
 
 ```
-    git clone https://github.com/nginxinc/docker-nginx-amplify.git
+git clone https://github.com/nginxinc/docker-nginx-amplify.git
 ```
 
 ```
-    cd docker-nginx-amplify
+cd docker-nginx-amplify
 ```
 
 ```
-    docker build -t nginx-amplify .
+docker build -t nginx-amplify .
 ```
 
 After the image is built, check the list of Docker images:
 
 ```
-    docker images
+docker images
 ```
 
 ```
-    REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-    nginx-amplify       latest              d039b39d2987        3 minutes ago       241.6 MB
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+nginx-amplify       latest              d039b39d2987        3 minutes ago       241.6 MB
 ```
 
 ### 2.2. Running an Amplify-enabled NGINX Docker Container
@@ -120,7 +120,7 @@ Unless already done, you have to [sign up](https://amplify.nginx.com/signup/), c
 To start a container from the new image, use the command below:
 
 ```
-    docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
+docker run --name mynginx1 -e API_KEY=ffeedd0102030405060708090a0b0c -e AMPLIFY_IMAGENAME=my-service-123 -d nginx-amplify
 ```
 
 where the API_KEY is that assigned to your NGINX Amplify account, and the AMPLIFY_IMAGENAME is set to identify the running service as described in sections 1.2 and 1.3 above.
@@ -128,40 +128,40 @@ where the API_KEY is that assigned to your NGINX Amplify account, and the AMPLIF
 After the container has started, you may check its status with `docker ps`:
 
 ```
-    docker ps
+docker ps
 ```
 
 ```
-    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-    7d7b47ba4c72        nginx-amplify       "/entrypoint.sh"    3 seconds ago       Up 2 seconds        80/tcp, 443/tcp     mynginx1
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+7d7b47ba4c72        nginx-amplify       "/entrypoint.sh"    3 seconds ago       Up 2 seconds        80/tcp, 443/tcp     mynginx1
 ```
 
 and you can also check `docker logs`:
 
 ```
-    docker logs 7d7b47ba4c72
+docker logs 7d7b47ba4c72
 ```
 
 ```
-    starting nginx ...
-    updating /etc/amplify-agent/agent.conf ...
-     ---> using api_key = ffeedd0102030405060708090a0b0c
-     ---> using imagename = my-service-123
-    starting amplify-agent ...
+starting nginx ...
+updating /etc/amplify-agent/agent.conf ...
+---> using api_key = ffeedd0102030405060708090a0b0c
+---> using imagename = my-service-123
+starting amplify-agent ...
 ```
 
 Check what processes have started:
 
 ```
-    docker exec 7d7b47ba4c72 ps axu
+docker exec 7d7b47ba4c72 ps axu
 ```
 
 ```
-    USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-    root         1  0.0  0.1   4328   676 ?        Ss   19:33   0:00 /bin/sh /entrypoint.sh
-    root         5  0.0  0.5  31596  2832 ?        S    19:33   0:00 nginx: master process nginx -g daemon off;
-    nginx       11  0.0  0.3  31988  1968 ?        S    19:33   0:00 nginx: worker process
-    nginx       65  0.6  9.1 111584 45884 ?        S    19:33   0:06 amplify-agent
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.1   4328   676 ?        Ss   19:33   0:00 /bin/sh /entrypoint.sh
+root         5  0.0  0.5  31596  2832 ?        S    19:33   0:00 nginx: master process nginx -g daemon off;
+nginx       11  0.0  0.3  31988  1968 ?        S    19:33   0:00 nginx: worker process
+nginx       65  0.6  9.1 111584 45884 ?        S    19:33   0:06 amplify-agent
 ```
 
 If you see the **amplify-agent** process, it all went smoothly, and you should see the new container in the Amplify web user interface in about a minute or so.
@@ -169,29 +169,29 @@ If you see the **amplify-agent** process, it all went smoothly, and you should s
 Check the Amplify Agent log:
 
 ```
-    docker exec 7d7b47ba4c72 tail /var/log/amplify-agent/agent.log
+docker exec 7d7b47ba4c72 tail /var/log/amplify-agent/agent.log
 ```
 
 ```
-    2016-08-05 19:49:39,001 [65] supervisor agent started, version=0.37-1 pid=65 uuid=<..> imagename=my-service-123
-    2016-08-05 19:49:39,047 [65] nginx_config running nginx -t -c /etc/nginx/nginx.conf
-    2016-08-05 19:49:40,047 [65] supervisor post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/agent/ 200 85 4 0.096
-    2016-08-05 19:50:24,674 [65] bridge_manager post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/update/ 202 2370 0 0.084
+2016-08-05 19:49:39,001 [65] supervisor agent started, version=0.37-1 pid=65 uuid=<..> imagename=my-service-123
+2016-08-05 19:49:39,047 [65] nginx_config running nginx -t -c /etc/nginx/nginx.conf
+2016-08-05 19:49:40,047 [65] supervisor post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/agent/ 200 85 4 0.096
+2016-08-05 19:50:24,674 [65] bridge_manager post https://receiver.amplify.nginx.com:443/<..>/ffeedd0102030405060708090a0b0c/update/ 202 2370 0 0.084
 ```
 
 When you're done with the container, you can stop it like the following:
 
 ```
-    docker stop 7d7b47ba4c72
+docker stop 7d7b47ba4c72
 ```
 
 To check the status of all containers (running and stopped):
 
 ```
-    docker ps -a
+docker ps -a
 ```
 
 ```
-    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
-    7d7b47ba4c72        nginx-amplify       "/entrypoint.sh"         22 minutes ago      Exited (137) 19 seconds ago                       mynginx1
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
+7d7b47ba4c72        nginx-amplify       "/entrypoint.sh"         22 minutes ago      Exited (137) 19 seconds ago                       mynginx1
 ```
