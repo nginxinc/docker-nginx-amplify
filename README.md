@@ -18,25 +18,25 @@
 
 ### 1.1. NGINX Amplify Agent Inside Docker Container 
 
-The Amplify Agent can be deployed in a Docker environment. At this time there are still certain limitations related to how and what metrics are collected (see below), but overall the agent can be successfully used to monitor NGINX instances running inside Docker containers.
+The [Amplify](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md) Agent can be deployed in a Docker environment. At this time there are still certain limitations related to how and what metrics are collected (see below), but overall the agent can be successfully used to monitor NGINX instances running inside Docker containers.
 
 The "agent inside the container" is currenly the only mode of operation. In other words, the agent should be running in the same container, next to the NGINX instance.
 
 ### 1.2. Standalone Mode
 
-By default the agent will try to determine the OS' `hostname` on startup (see the docs [here](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#changing-the-hostname-and-uuid) for more information). The `hostname` is used to generate an UUID to uniquely identify the new object in the monitoring backend.
+By default the agent will try to determine the OS `hostname` on startup (see the docs [here](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#changing-the-hostname-and-uuid) for more information). The `hostname` is used to generate an UUID to uniquely identify the new object in the monitoring backend.
 
 This means that in the absence of the additional configuration steps, each new container started from an Amplify-enabled Docker image will be reported as a standalone system in the Amplify web user interface. Moreover, the reported hostname is typically something not easily readable.
 
 When using Amplify with Docker, another option is available and recommended — which is `imagename`. The `imagename` option tells the Amplify Agent that it's running in a container environment, and that the agent should collect and report metrics and metadata accordingly.
 
-If you prefer to see the individual instances started from the same image as separate objects, assign different `imagename`'s to each of the running instances.
+If you prefer to see the individual instances started from the same image as separate objects, assign different `imagename` to each of the running instances.
 
 You can learn more about the agent configuration options [here](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#configuring-the-agent).
 
 ### 1.3. Aggregate Mode
 
-As already described above, when reporting a new object for monitoring, the agent honors the `imagename` configuration option in **/etc/amplify-agent/agent.conf**
+As described above, when reporting a new object for monitoring, the agent honors the `imagename` configuration option in the **/etc/amplify-agent/agent.conf** file.
 
 The `imagename` option should be set either in the Dockerfile or using the environment variables.
 
@@ -74,8 +74,8 @@ To set a common `imagename` for several containers started from the Amplify-enab
 
 The following list summarizes existing limitations of monitoring Docker containers with Amplify:
 
- * In order for the agent to collect [additional NGINX metrics](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#additional-nginx-metrics) the NGINX logs should be kept inside the container (by default the NGINX logs are redirected to the Docker log collector). At this time the agent can obtain NGINX log files directly from storage or via syslog.
- * In "aggregate" mode, some of the OS metrics and metadata are not collected.
+ * In order for the agent to collect [additional NGINX metrics](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#additional-nginx-metrics) the NGINX logs should be kept inside the container (by default the NGINX logs are redirected to the Docker log collector). Alternatively the NGINX logs can be fed to the agent via [syslog](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#configuring-syslog).
+ * In "aggregate" mode, some of the OS metrics and metadata are not collected (e.g. CPU usage, and hostnames).
  * The agent can only monitor NGINX from inside the container. It is not currently possible to run the agent in a separate container and monitor the neighboring containers running NGINX.
  
 We've been working on improving the support for Docker even more. Stay tuned!
@@ -195,3 +195,5 @@ docker ps -a
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
 7d7b47ba4c72        nginx-amplify       "/entrypoint.sh"         22 minutes ago      Exited (137) 19 seconds ago                       mynginx1
 ```
+
+Happy monitoring, and feel free to send us questions, opinions, and any feedback in general.
