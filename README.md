@@ -16,6 +16,12 @@
 
 ## 1. Overview
 
+[Amplify](https://amplify.nginx.com/signup/) is a free monitoring tool that can be used to monitor microservice architectures based on nginx. Amplify is developed and maintained by the company behind the nginx software.
+
+With Amplify it is possible to collect and aggregate metrics across containers, and present a coherent set of visualizations of the key performance data, such as active connections or requests per second. It is also easy to quickly check for any performance degradations, traffic anomalies, and get a deeper insight into the nginx configuration in general.
+
+In order to use Amplify, a small Python-based agent software (Amplify Agent) should be [installed](https://github.com/nginxinc/docker-nginx-amplify) inside the container.
+
 ### 1.1. NGINX Amplify Agent Inside Docker Container 
 
 The [Amplify](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md) Agent can be deployed in a Docker environment. At this time there are still certain limitations related to how and what metrics are collected (see below), but overall the agent can be successfully used to monitor NGINX instances running inside Docker containers.
