@@ -16,7 +16,7 @@
 
 ## 1. Overview
 
-[NGINX Amplify](https://amplify.nginx.com/signup/) is a free monitoring tool that can be used to monitor microservice architectures based on NGINX and Docker. Amplify is developed and maintained by Nginx Inc. — the company behind the NGINX software.
+[NGINX Amplify](https://amplify.nginx.com/signup/) is a free monitoring tool that can be used with a microservice architecture based on NGINX and Docker. Amplify is developed and maintained by Nginx Inc. — the company behind the NGINX software.
 
 With Amplify it is possible to collect and aggregate metrics across Docker containers, and present a coherent set of visualizations of the key NGINX performance data, such as active connections or requests per second. It is also easy to quickly check for any performance degradations, traffic anomalies, and get a deeper insight into the NGINX configuration in general.
 
