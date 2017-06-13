@@ -4,7 +4,7 @@ MAINTAINER NGINX Amplify Engineering
 # Install the NGINX Amplify Agent
 RUN apt-get update \
     && apt-get install -qqy curl python apt-transport-https apt-utils gnupg1 procps \
-    && echo 'deb https://packages.amplify.nginx.com/debian/ jessie amplify-agent' > /etc/apt/sources.list.d/nginx-amplify.list \
+    && echo 'deb https://packages.amplify.nginx.com/debian/ stretch amplify-agent' > /etc/apt/sources.list.d/nginx-amplify.list \
     && curl -fs https://nginx.org/keys/nginx_signing.key | apt-key add - > /dev/null 2>&1 \
     && apt-get update \
     && apt-get install -qqy nginx-amplify-agent \
