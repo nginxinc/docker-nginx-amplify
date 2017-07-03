@@ -83,7 +83,7 @@ To set a common `imagename` for several containers started from the Amplify-enab
 The following list summarizes existing limitations of monitoring Docker containers with Amplify:
 
  * In order for the agent to collect [additional NGINX metrics](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#additional-nginx-metrics) the NGINX logs should be kept inside the container (by default the NGINX logs are redirected to the Docker log collector). Alternatively the NGINX logs can be fed to the agent via [syslog](https://github.com/nginxinc/nginx-amplify-doc/blob/master/amplify-guide.md#configuring-syslog).
- * In "aggregate" mode, some of the OS metrics and metadata are not collected (e.g. CPU usage, and hostnames).
+ * In "aggregate" mode, some of the OS metrics and metadata are not collected (e.g. hostnames, CPU usage, Disk I/O metrics, network interface configuration).
  * The agent can only monitor NGINX from inside the container. It is not currently possible to run the agent in a separate container and monitor the neighboring containers running NGINX.
  
 We've been working on improving the support for Docker even more. Stay tuned!
