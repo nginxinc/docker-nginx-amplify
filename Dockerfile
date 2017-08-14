@@ -8,7 +8,7 @@ RUN apt-get update \
     && curl -fs https://nginx.org/keys/nginx_signing.key | apt-key add - > /dev/null 2>&1 \
     && apt-get update \
     && apt-get install -qqy nginx-amplify-agent \
-    && apt-get purge -qqy curl apt-transport-https apt-utils gnupg1 \
+    && apt-get purge -qqy curl gnupg1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Keep the nginx logs inside the container
