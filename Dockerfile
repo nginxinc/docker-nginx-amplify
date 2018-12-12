@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -qqy nginx-amplify-agent \
     && apt-get purge -qqy curl apt-transport-https apt-utils gnupg1 \
+    && rm -rf /etc/apt/sources.list.d/nginx-amplify.list \
     && rm -rf /var/lib/apt/lists/*
 
 # Keep the nginx logs inside the container
