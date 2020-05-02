@@ -1,8 +1,8 @@
-FROM alpine:3.8
+FROM alpine:3
 
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
-ENV NGINX_VERSION 1.14.2
+ENV NGINX_VERSION 1.18.0
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -142,6 +142,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
         procps \
         util-linux \
         py-pip \
+        # Is required ujson library. Without will be an "Error loading shared library libstdc++.so"
+        libstdc++ \
         \
         # install packages required for agent build
         && apk add --no-cache --virtual .amplify\
@@ -149,12 +151,16 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
         build-base \
         git \
         linux-headers \
+        libffi-dev \
+        openssl-dev \
         && cd / \
         \
         # clone latest agent from repository and build it
         && git clone https://github.com/nginxinc/nginx-amplify-agent \
         && cd nginx-amplify-agent/ \
         && pip install --no-cache-dir -r packages/nginx-amplify-agent/requirements.txt \
+        # Bump ujson library for fix error "ujson.so: Buffer_AppendShortHexUnchecked: symbol not found"
+        && pip install --no-cache-dir --upgrade ujson==2.0.3 \
         && python setup.py install \
         \
         # make sure agent log exists
