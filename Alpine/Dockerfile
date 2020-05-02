@@ -1,8 +1,8 @@
-FROM alpine:3.8
+FROM alpine:3
 
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
-ENV NGINX_VERSION 1.14.2
+ENV NGINX_VERSION 1.18.0
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -149,6 +149,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
         build-base \
         git \
         linux-headers \
+        libffi-dev \
+        openssl-dev \
         && cd / \
         \
         # clone latest agent from repository and build it
