@@ -157,6 +157,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
         && git clone https://github.com/nginxinc/nginx-amplify-agent \
         && cd nginx-amplify-agent/ \
         && pip install --no-cache-dir -r packages/nginx-amplify-agent/requirements.txt \
+        # Bump ujson library for fix error "ujson.so: Buffer_AppendShortHexUnchecked: symbol not found"
+        && pip install --no-cache-dir --upgrade ujson==2.0.3 \
         && python setup.py install \
         \
         # make sure agent log exists
