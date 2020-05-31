@@ -21,8 +21,13 @@ api_key=""
 amplify_imagename=""
 
 # Launch nginx
-echo "starting nginx ..."
-nginx -g "daemon off;" &
+
+if [[ $# -eq 0 ]]; then
+    echo "starting nginx ..."
+    nginx -g "daemon off;" &
+else
+    exec "$@" &
+fi
 
 nginx_pid=$!
 
