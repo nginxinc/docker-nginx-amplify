@@ -35,7 +35,7 @@ _stop() {
     exit 0
 }
 
-for sig in SIGTERM SIGINT SIGQUIT SIGHUP; do
+for sig in TERM INT QUIT HUP; do
     trap "kill \${!}; _stop $sig" $sig
 done
 
