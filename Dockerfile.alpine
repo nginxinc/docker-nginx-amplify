@@ -1,19 +1,34 @@
-FROM docker.io/nginx:latest as nginx
+FROM docker.io/nginx:alpine as nginx
 
 LABEL maintainer="NGINX Packaging <nginx-packaging@f5.com>"
 
 # Install the NGINX Amplify Agent
-RUN apt-get update \
-    && apt-get install --no-install-recommends --no-install-suggests -y curl gnupg1 procps lsb-release ca-certificates debian-archive-keyring \
-    && curl https://nginx.org/keys/nginx_signing.key | gpg1 --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://packages.amplify.nginx.com/py3/debian/ $(lsb_release -cs) amplify-agent" > /etc/apt/sources.list.d/nginx-amplify.list \
-    && apt-get update \
-    && apt-get install --no-install-recommends --no-install-suggests -y nginx-amplify-agent \
-    && apt-mark hold nginx-amplify-agent \
-    && apt-get remove --purge --auto-remove -y curl gnupg1 \
-    && rm -f /etc/apt/sources.list.d/nginx-amplify.list \
-    && rm -f /usr/share/keyrings/nginx-archive-keyring.gpg \
-    && rm -rf /var/lib/apt/lists/*
+RUN \
+    # install packages required by agent
+    apk add --no-cache python3 procps util-linux py3-pip \
+    \
+    # install packages required for agent build
+    && apk add --no-cache --virtual .amplify python3-dev libffi-dev build-base git linux-headers \
+    && cd / \
+    \
+    # clone latest agent from repository and build it
+    && git clone https://github.com/nginxinc/nginx-amplify-agent \
+    && cd nginx-amplify-agent/ \
+    && pip install --no-cache-dir -r packages/nginx-amplify-agent/requirements-py310.txt \
+    && cp packages/nginx-amplify-agent/setup.py ./ \
+    && python3 setup.py install \
+    \
+    # link default Amplify Agent log location to stdout
+    && mkdir -p /var/log/amplify-agent \
+    && ln -s /dev/stdout /var/log/amplify-agent/agent.log \
+    \
+    # create agent config file
+    && cp /etc/amplify-agent/agent.conf.default /etc/amplify-agent/agent.conf \
+    \
+    # cleanup
+    && cd / \
+    && rm -Rf nginx-amplify-agent/ \
+    && apk del .amplify
 
 # Keep the nginx logs inside the container
 RUN unlink /var/log/nginx/access.log \
@@ -22,10 +37,6 @@ RUN unlink /var/log/nginx/access.log \
     && touch /var/log/nginx/error.log \
     && chown nginx /var/log/nginx/*log \
     && chmod 644 /var/log/nginx/*log
-
-# Link default Amplify Agent log location to stdout
-RUN unlink /var/log/amplify-agent/agent.log \
-    && ln -s /dev/stdout /var/log/amplify-agent/agent.log
 
 # Copy nginx stub_status config
 COPY ./conf.d/stub_status.conf /etc/nginx/conf.d
