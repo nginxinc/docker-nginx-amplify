@@ -23,9 +23,8 @@ RUN unlink /var/log/nginx/access.log \
     && chown nginx /var/log/nginx/*log \
     && chmod 644 /var/log/nginx/*log
 
-# Link default Amplify Agent log location to stdout
-RUN unlink /var/log/amplify-agent/agent.log \
-    && ln -s /dev/stdout /var/log/amplify-agent/agent.log
+# Adjust permissions so agent could write log under nginx user
+RUN chown nginx /var/log/amplify-agent/ /var/log/amplify-agent/agent.log
 
 # Copy nginx stub_status config
 COPY ./conf.d/stub_status.conf /etc/nginx/conf.d

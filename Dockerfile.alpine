@@ -5,7 +5,7 @@ LABEL maintainer="NGINX Packaging <nginx-packaging@f5.com>"
 # Install the NGINX Amplify Agent
 RUN \
     # install packages required by agent
-    apk add --no-cache python3 procps util-linux py3-pip \
+    apk add --no-cache python3 procps util-linux py3-pip py3-setproctitle \
     \
     # install packages required for agent build
     && apk add --no-cache --virtual .amplify python3-dev libffi-dev build-base git linux-headers \
@@ -20,7 +20,8 @@ RUN \
     \
     # link default Amplify Agent log location to stdout
     && mkdir -p /var/log/amplify-agent \
-    && ln -s /dev/stdout /var/log/amplify-agent/agent.log \
+    && touch /var/log/amplify-agent/agent.log \
+    && chown nginx /var/log/amplify-agent /var/log/amplify-agent/agent.log \
     \
     # create agent config file
     && cp /etc/amplify-agent/agent.conf.default /etc/amplify-agent/agent.conf \

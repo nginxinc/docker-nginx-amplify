@@ -14,6 +14,7 @@
 # will create separate objects for monitoring (an object per instance).
 #
 
+agent_log_file="/var/log/amplify-agent/agent.log"
 agent_conf_file="/etc/amplify-agent/agent.conf"
 nginx_status_conf="/etc/nginx/conf.d/stub_status.conf"
 
@@ -74,23 +75,27 @@ if [ -n "${AMPLIFY_LOGLEVEL}" ]; then
         ${agent_conf_file}
 fi
 
-test -f "${agent_conf_file}" && \
-chmod 644 ${agent_conf_file} && \
-chown nginx ${agent_conf_file} > /dev/null 2>&1
-
-test -f "${nginx_status_conf}" && \
-chmod 644 ${nginx_status_conf} && \
-chown nginx ${nginx_status_conf} > /dev/null 2>&1
+for f in ${agent_log_file} ${agent_conf_file} ${nginx_status_conf} ; do
+    if [ -f "${f}" ]; then
+        chmod 644 "${f}"
+        chown nginx "${f}"
+    fi
+done
 
 echo "=== starting amplify-agent" >&2
-/usr/bin/nginx-amplify-agent.py configtest --config /etc/amplify-agent/agent.conf --log /dev/stdout
-if [ $? -ne 0 ]; then
+if ! su -s /bin/sh nginx -c "/usr/bin/nginx-amplify-agent.py configtest --config /etc/amplify-agent/agent.conf"; then
     echo "=== amplify-agent configuration/initialization check failed, exiting" >&2
     exit 1
 fi
-/usr/bin/nginx-amplify-agent.py start --foreground --config /etc/amplify-agent/agent.conf --log /dev/stdout &
-agent_pid="$!"
+truncate -s 0 "${agent_log_file}"
+su -s /bin/sh nginx -c "/usr/bin/nginx-amplify-agent.py start --foreground --config /etc/amplify-agent/agent.conf & echo \$!" >/var/run/amplify-agent.pid
+agent_pid=$(cat /var/run/amplify-agent.pid)
 
-while [ :: ]; do
+tail -F "${agent_log_file}" &
+tail_pid="$!"
+
+echo "=== nginx_pid=${nginx_pid} agent_pid=${agent_pid} tail_pid=${tail_pid}" >&2
+
+while true; do
     sleep 60 & wait ${!}
 done
