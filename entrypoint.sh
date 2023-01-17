@@ -35,7 +35,7 @@ _stop() {
     exit 0
 }
 
-for sig in TERM INT QUIT HUP; do
+for sig in TERM QUIT INT; do
     trap "kill \${!}; _stop $sig" $sig
 done
 
@@ -83,6 +83,11 @@ chmod 644 ${nginx_status_conf} && \
 chown nginx ${nginx_status_conf} > /dev/null 2>&1
 
 echo "=== starting amplify-agent" >&2
+/usr/bin/nginx-amplify-agent.py configtest --config /etc/amplify-agent/agent.conf --log /dev/stdout
+if [ $? -ne 0 ]; then
+    echo "=== amplify-agent configuration/initialization check failed, exiting" >&2
+    exit 1
+fi
 /usr/bin/nginx-amplify-agent.py start --foreground --config /etc/amplify-agent/agent.conf --log /dev/stdout &
 agent_pid="$!"
 
