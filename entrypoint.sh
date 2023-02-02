@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env sh
+# vim:sw=4:ts=4:et:
 #
 # This script launches nginx and the NGINX Amplify Agent.
 #
@@ -13,65 +14,88 @@
 # will create separate objects for monitoring (an object per instance).
 #
 
-# Variables
-agent_conf_file="/etc/amplify-agent/agent.conf"
 agent_log_file="/var/log/amplify-agent/agent.log"
+agent_conf_file="/etc/amplify-agent/agent.conf"
 nginx_status_conf="/etc/nginx/conf.d/stub_status.conf"
-api_key=""
-amplify_imagename=""
 
-# Launch nginx
-echo "starting nginx ..."
-nginx -g "daemon off;" &
+agent_pid=0
+nginx_pid=0
 
-nginx_pid=$!
-
-test -n "${API_KEY}" && \
-    api_key=${API_KEY}
-
-test -n "${AMPLIFY_IMAGENAME}" && \
-    amplify_imagename=${AMPLIFY_IMAGENAME}
-
-if [ -n "${api_key}" -o -n "${amplify_imagename}" ]; then
-    echo "updating ${agent_conf_file} ..."
-
-    if [ ! -f "${agent_conf_file}" ]; then
-	test -f "${agent_conf_file}.default" && \
-	cp -p "${agent_conf_file}.default" "${agent_conf_file}" || \
-	{ echo "no ${agent_conf_file}.default found! exiting."; exit 1; }
+_stop() {
+    echo "=== stopping by $1" >&2
+    if [ $agent_pid -ne 0 ]; then
+        echo "=== stopping agent" >&2
+        kill -TERM $agent_pid
+        wait "$agent_pid"
     fi
+    if [ $nginx_pid -ne 0 ]; then
+        echo "=== stopping nginx" >&2
+        kill -QUIT $nginx_pid
+        wait "$nginx_pid"
+    fi
+    exit 0
+}
 
-    test -n "${api_key}" && \
-    echo " ---> using api_key = ${api_key}" && \
-    sh -c "sed -i.old -e 's/api_key.*$/api_key = $api_key/' \
-	${agent_conf_file}"
+for sig in TERM QUIT INT; do
+    trap "kill \${!}; _stop $sig" $sig
+done
 
-    test -n "${amplify_imagename}" && \
-    echo " ---> using imagename = ${amplify_imagename}" && \
-    sh -c "sed -i.old -e 's/imagename.*$/imagename = $amplify_imagename/' \
-	${agent_conf_file}"
+echo "=== starting nginx" >&2
+/usr/sbin/nginx -c /etc/nginx/nginx.conf -g 'daemon off;' &
+nginx_pid="$!"
 
-    test -f "${agent_conf_file}" && \
-    chmod 644 ${agent_conf_file} && \
-    chown nginx ${agent_conf_file} > /dev/null 2>&1
-
-    test -f "${nginx_status_conf}" && \
-    chmod 644 ${nginx_status_conf} && \
-    chown nginx ${nginx_status_conf} > /dev/null 2>&1
+if [ ! -f "${agent_conf_file}" ]; then
+    if [ -f "${agent_conf_file}.default" ]; then
+        cp -p "${agent_conf_file}.default" "${agent_conf_file}"
+    else
+        echo "no ${agent_conf_file}.default found! exiting." >&2
+        exit 1
+    fi
 fi
 
-if ! grep '^api_key.*=[ ]*[[:alnum:]].*' ${agent_conf_file} > /dev/null 2>&1; then
-    echo "no api_key found in ${agent_conf_file}! exiting."
+if [ -n "${API_KEY}" ]; then
+    echo "=== using api_key=${API_KEY}" >&2
+    sed -i.old -e "s,api_key.*$,api_key = $API_KEY," ${agent_conf_file}
 fi
 
-echo "starting amplify-agent ..."
-service amplify-agent start > /dev/null 2>&1 < /dev/null
+if [ -n "${API_URL}" ]; then
+    echo "=== using api_url=${API_URL}" >&2
+    sed -i.old -e "s,api_url.*$,api_url = $API_URL," ${agent_conf_file}
+fi
 
-if [ $? != 0 ]; then
-    echo "couldn't start the agent, please check ${agent_log_file}"
+if [ -n "${AMPLIFY_IMAGENAME}" ]; then
+    echo "=== using imagename=${AMPLIFY_IMAGENAME}" >&2
+    sed -i.old -e "s,imagename.*$,imagename = $AMPLIFY_IMAGENAME," \
+        ${agent_conf_file}
+fi
+
+if [ -n "${AMPLIFY_LOGLEVEL}" ]; then
+    echo "=== using loglevel=${AMPLIFY_LOGLEVEL}" >&2
+    sed -i.old -e "s,level =.*$,level = $AMPLIFY_LOGLEVEL," \
+        ${agent_conf_file}
+fi
+
+for f in ${agent_log_file} ${agent_conf_file} ${nginx_status_conf} ; do
+    if [ -f "${f}" ]; then
+        chmod 644 "${f}"
+        chown nginx "${f}"
+    fi
+done
+
+echo "=== starting amplify-agent" >&2
+if ! su -s /bin/sh nginx -c "/usr/bin/nginx-amplify-agent.py configtest --config /etc/amplify-agent/agent.conf"; then
+    echo "=== amplify-agent configuration/initialization check failed, exiting" >&2
     exit 1
 fi
+truncate -s 0 "${agent_log_file}"
+su -s /bin/sh nginx -c "/usr/bin/nginx-amplify-agent.py start --foreground --config /etc/amplify-agent/agent.conf & echo \$!" >/var/run/amplify-agent.pid
+agent_pid=$(cat /var/run/amplify-agent.pid)
 
-wait ${nginx_pid}
+tail -F "${agent_log_file}" &
+tail_pid="$!"
 
-echo "nginx master process has stopped, exiting."
+echo "=== nginx_pid=${nginx_pid} agent_pid=${agent_pid} tail_pid=${tail_pid}" >&2
+
+while true; do
+    sleep 60 & wait ${!}
+done
