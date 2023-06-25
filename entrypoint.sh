@@ -41,8 +41,13 @@ for sig in TERM QUIT INT; do
 done
 
 echo "=== starting nginx" >&2
-/usr/sbin/nginx -c /etc/nginx/nginx.conf -g 'daemon off;' &
-nginx_pid="$!"
+if [[ &# -eq 0 ]]; then
+	/usr/sbin/nginx -c /etc/nginx/nginx.conf -g 'daemon off;' &
+	nginx_pid="$!"
+else
+	exec "$@" & 
+	nginx_pid="$!"
+fi
 
 if [ ! -f "${agent_conf_file}" ]; then
     if [ -f "${agent_conf_file}.default" ]; then
