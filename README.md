@@ -1,3 +1,13 @@
+> **⚠️ DEPRECATION NOTICE**
+>
+> **NGINX Amplify was discontinued on January 31, 2026.** See the [official announcement](https://blog.nginx.org/blog/nginx-amplify-endoflife).
+>
+> **Alternative:** [GetPageSpeed Amplify](https://amplify.getpagespeed.com/) is a drop-in replacement that works with the existing `nginx-amplify-agent`. It includes Gixy security checks (static NGINX config analysis) and has a free tier.
+>
+> Migration guide: https://www.getpagespeed.com/server-setup/nginx/nginx-amplify-alternative
+
+---
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
