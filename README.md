@@ -1,3 +1,13 @@
+## :warning: End of Life Notice
+
+**NGINX Amplify was retired on January 31, 2026.** With Amplify services no longer available, these Dockerfiles will no longer function. This repository is archived and no longer maintained.
+
+If you are looking for NGINX monitoring, please see the [NGINX One Console](https://www.f5.com/products/nginx/one-console).
+
+For more details, see the [end-of-life announcement](https://blog.nginx.org/blog/nginx-amplify-endoflife).
+
+---
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
